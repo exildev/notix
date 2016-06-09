@@ -1,0 +1,19 @@
+{
+  "name": "notix",
+  "version": "1.0.0",
+  "description": "\"Sistema de notificación para aplicación Piscix\"",
+  "main": "index.js",
+  "scripts": {
+    "test": "nodejs test.js",
+    "run": "nodejs index.js"
+  },
+  "author": "Exile",
+  "license": "MIT",
+  "dependencies": {
+    "mongodb": "^2.1.18",
+    "mongoose": "^4.4.20",
+    "request": "^2.72.0",
+    "socket.io": "^1.4.6",
+    "sqlite3": "^3.1.4"
+  }
+}
