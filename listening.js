@@ -38,7 +38,7 @@ module.exports = {
 
 	add_messages_by_type: function (type, messages, callback){
 		this.Session.find({'type': type}, {}, function(err, raw){
-			console.log(raw);
+			
 			raw.forEach(function (doc, index, raw) {
 				for (var i in messages) {
 					var message = new this.Message({
@@ -75,6 +75,10 @@ module.exports = {
 		);
 	},
 
+	update_session: function (type, webuser, session_id, socket_id, callback){
+		this.delete_session(type, webuser, session_id);
+		this.add_session(type, webuser, session_id, socket_id, callback);
+	},
 	add_session: function (type, webuser, session_id, socket_id, callback){
 		var session = this.Session.find({'type': type, 'webuser': webuser}, function(err, raw){
 			if (raw.length == 0){
@@ -118,10 +122,10 @@ module.exports = {
 		this.Message.remove({'_id': message_id}).exec();
 	},
 
-	delete_session: function (type, webuser, session_id, socket_id){
+	delete_session: function (type, webuser, session_id){
 		this.Session.update(
 			{'type': type, 'webuser': webuser}, 
-			{$pull: {'sessions': {'session_id': session_id, 'socket_id': socket_id}}}
+			{$pull: {'sessions': {'session_id': session_id}}}
 		).exec();
 	}
 

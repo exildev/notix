@@ -8,16 +8,18 @@ var request = require('request');
 var verifing = {};
 
 listening.setup(function(){
-
+	listening.reset();
 	io.on('connection', function(socket) {
 			socket.on('identify', function(message) {
 				var django_id = message['django_id'];
 				var usertype = message['usertype'];
-
+				console.log("Idd");
 				var ID = session.get_session(django_id, usertype);
 				socket.emit('identify', {"ID": ID});
 				if (ID){
 					session.clear(django_id, usertype);
+					console.log("active", django_id);
+					listening.update_session(ID.type, ID.webuser, django_id, socket.id);
 				}
 			});
 
@@ -31,7 +33,7 @@ listening.setup(function(){
 
 				if (usertype == 'WEB'){
 					verifing[django_id] = socket.id;
-					request('http://192.168.0.109:1190/notificaciones/verify/' + django_id + '/', function (error, response, body) {
+					request('http://192.168.0.109:8000/notificaciones/verify/' + django_id + '/', function (error, response, body) {
 						if (!error && response.statusCode == 200) {
 							var data = JSON.parse(body);
 							if (data.socket_id == socket.id){
@@ -42,7 +44,7 @@ listening.setup(function(){
 										listening.add_session(data.type, webuser, django_id, socket.id);
 										socket.on('disconnect', function(){
 											console.log('disconnect', socket.id);
-											listening.delete_session(data.type, webuser, django_id, socket.id);
+											listening.delete_session(data.type, webuser, django_id);
 										});
 										socket.emit('success-login');
 									}else{
@@ -73,12 +75,13 @@ listening.setup(function(){
 				var usertype = message['usertype'];
 				var send_to = message['_send_to_'];
 				var key = session.get_session(django_id, usertype);
-				console.log(message, key);
+				console.log("--------------");
 				if (key){
 					for (var to in send_to){
+						console.log(send_to[to]);
 						listening.add_messages_by_type(send_to[to], [message], 
 							function(django_id, socket_id, message){
-								console.log('notix', socket_id);
+								console.log('notix', socket_id, django_id, send_to[to]);
 								io.to(socket_id).emit('notix', message);
 						});
 					}
