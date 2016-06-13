@@ -1,7 +1,8 @@
 var mongoose = require('mongoose');
+var tasks = require('node-schedule');
 
 module.exports = {
-	listenings : {},
+	schedule : {},
 
 	setup: function (callback){
 		mongoose.connect('mongodb://localhost/test');
@@ -16,7 +17,7 @@ module.exports = {
 			});
 			this.Message = mongoose.model('Message', message);
 			var session = mongoose.Schema({
-				'type': String,
+				'type': Array,
 				'webuser': String,
 				'sessions': [
 					{
@@ -27,6 +28,15 @@ module.exports = {
 			});
 			this.Session = mongoose.model('Session', session);
 
+			var schedule = mongoose.Schema({
+				'types': Array,
+				'data': Object,
+				'cron': String,
+				'ouner': String,
+				'class': String
+			});
+			this.Schedule = mongoose.model('Schedule', schedule);
+
 			callback();
 		}.bind(this));
 	},
@@ -34,9 +44,48 @@ module.exports = {
 	reset: function(){
 		this.Session.remove({}).exec();
 		this.Message.remove({}).exec();
+		this.Schedule.remove({}).exec();
 	},
 
-	add_messages_by_type: function (type, messages, callback){
+	delete_schedule: function(clazs, ouner){
+		this.Schedule.findOne({'class': clazs, 'ouner': ouner}, function(err, doc) {
+
+			if (doc){
+				if (doc._id in this.schedule){
+					this.schedule[doc._id].cancel();
+					delete this.schedule[doc._id];
+				}
+				console.log("remove", doc._id);
+				this.Schedule.remove({'_id': doc._id});
+			}
+		}.bind(this));
+	},
+
+	add_schedule: function(types, message, cron, clazs, ouner, callback) {
+
+		var schedule = new this.Schedule({
+			'types': types, 'data':message, 'cron':cron, 'class':clazs, 'ouner':ouner
+		});
+
+		schedule.save();
+		
+		console.log("add", schedule._id);
+		var task = tasks.scheduleJob(cron, function(){
+			for (var i in types){
+				console.log(message);
+		    	this.add_messages_by_type(types[i], [message], callback);
+			}
+		}.bind(this));
+
+		this.schedule[schedule._id] = task;
+	},
+
+	update_schedule: function(type, message, cron, clazs, owner, callback) {
+		this.delete_schedule(clazs, owner);
+		this.add_schedule(type, message, cron, clazs, owner, callback)
+	},
+
+	add_messages_by_type: function (type, messages, callback) {
 		this.Session.find({'type': type}, {}, function(err, raw){
 			
 			raw.forEach(function (doc, index, raw) {
@@ -49,14 +98,16 @@ module.exports = {
 					});
 					message.save();
 					for (var j in doc.sessions){
-						callback(doc.sessions[j].session_id, doc.sessions[j].socket_id, message);
+						if (callback){
+							callback(doc.sessions[j].session_id, doc.sessions[j].socket_id, message);
+						}
 					}
 				}
 			}.bind(this));
 		}.bind(this));
 	},
 
-	add_messages: function (type, webuser, messages){
+	add_messages: function (type, webuser, messages) {
 		for (var i in messages){
 			var message = new this.Message({'type': type, 'webuser': webuser, 'data': messages[i], 'visited': false});
 			message.save();

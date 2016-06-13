@@ -13,8 +13,9 @@ listening.setup(function(){
 			socket.on('identify', function(message) {
 				var django_id = message['django_id'];
 				var usertype = message['usertype'];
-				console.log("Idd");
+				//console.log("Idd");
 				var ID = session.get_session(django_id, usertype);
+				//console.log("identify");
 				socket.emit('identify', {"ID": ID});
 				if (ID){
 					session.clear(django_id, usertype);
@@ -33,7 +34,7 @@ listening.setup(function(){
 
 				if (usertype == 'WEB'){
 					verifing[django_id] = socket.id;
-					request('http://192.168.0.109:8000/notificaciones/verify/' + django_id + '/', function (error, response, body) {
+					request('http://192.168.0.102:8000/notificaciones/verify/' + django_id + '/', function (error, response, body) {
 						if (!error && response.statusCode == 200) {
 							var data = JSON.parse(body);
 							if (data.socket_id == socket.id){
@@ -69,13 +70,23 @@ listening.setup(function(){
 
 			});
 
+			socket.on('cron', function(message){
+				var cron = message['cron'];
+				var clazs = message['class'];
+				var ouner = message['ouner'];
+				var send_to = message['_send_to_'];
+				listening.update_schedule(send_to, message, cron, clazs, ouner, 
+					function(django_id, socket_id, message){
+							console.log('notix', socket_id, django_id);
+							io.to(socket_id).emit('notix', message);
+					});
+			});
 
 			socket.on('save', function(message){
 				var django_id = message['django_id'];
 				var usertype = message['usertype'];
 				var send_to = message['_send_to_'];
 				var key = session.get_session(django_id, usertype);
-				console.log("--------------");
 				if (key){
 					for (var to in send_to){
 						console.log(send_to[to]);
@@ -117,6 +128,7 @@ listening.setup(function(){
 				if (key){
 					listening.get_messages(type, webuser, function(errors, messages){
 						for (var i in messages){
+							console.log('message', socket.id);
 							socket.emit('notix', messages[i]);
 						}
 					});
