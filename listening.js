@@ -36,9 +36,18 @@ module.exports = {
 				'class': String
 			});
 			this.Schedule = mongoose.model('Schedule', schedule);
-
+			this.Schedule.find({}, function(err, raw){
+			
+				raw.forEach(function (doc, index, raw) {
+						//console.log(doc);
+						this.add_schedule(doc.types, doc.message, doc.cron, doc['class'], doc.ouner);
+				}.bind(this));
+				
+			}.bind(this));
+			
 			callback();
 		}.bind(this));
+		
 	},
 
 	reset: function(){
@@ -47,18 +56,17 @@ module.exports = {
 		this.Schedule.remove({}).exec();
 	},
 
-	delete_schedule: function(clazs, ouner){
+	delete_schedule: function(clazs, ouner, callback){
 		this.Schedule.findOne({'class': clazs, 'ouner': ouner}, function(err, doc) {
-
 			if (doc){
 				if (doc._id in this.schedule){
 					this.schedule[doc._id].cancel();
 					delete this.schedule[doc._id];
 				}
-				console.log("remove", doc._id);
-				this.Schedule.remove({'_id': doc._id});
 			}
 		}.bind(this));
+		console.log("remove", {'class': clazs, 'ouner': ouner});
+		this.Schedule.remove({'class': clazs, 'ouner': ouner}, callback);
 	},
 
 	add_schedule: function(types, message, cron, clazs, ouner, callback) {
@@ -68,8 +76,8 @@ module.exports = {
 		});
 
 		schedule.save();
-		
-		console.log("add", schedule._id);
+
+		//console.log("add", schedule._id);
 		var task = tasks.scheduleJob(cron, function(){
 			for (var i in types){
 				console.log(message);
@@ -81,8 +89,9 @@ module.exports = {
 	},
 
 	update_schedule: function(type, message, cron, clazs, owner, callback) {
-		this.delete_schedule(clazs, owner);
-		this.add_schedule(type, message, cron, clazs, owner, callback)
+		this.delete_schedule(clazs, owner, function(){
+			this.add_schedule(type, message, cron, clazs, owner, callback);
+		}.bind(this));
 	},
 
 	add_messages_by_type: function (type, messages, callback) {
@@ -107,11 +116,22 @@ module.exports = {
 		}.bind(this));
 	},
 
-	add_messages: function (type, webuser, messages) {
+	add_messages: function (type, webuser, messages, callback) {
 		for (var i in messages){
+			console.log("TYPE", type);
 			var message = new this.Message({'type': type, 'webuser': webuser, 'data': messages[i], 'visited': false});
 			message.save();
 		}
+		this.Session.find({'type': type, 'webuser': webuser}, {}, function (err, raw){
+			console.log('type', raw);
+			raw.forEach(function (doc, index, raw) {
+				for (var j in doc.sessions) {
+					if (callback){
+						callback(doc.sessions[j].session_id, doc.sessions[j].socket_id, message);
+					}
+				}
+			});
+		});
 	},
 
 	visit_message: function (type, webuser, message_id, session_id, callback){

@@ -8,14 +8,12 @@ var request = require('request');
 var verifing = {};
 
 listening.setup(function(){
-	listening.reset();
+	
 	io.on('connection', function(socket) {
 			socket.on('identify', function(message) {
 				var django_id = message['django_id'];
 				var usertype = message['usertype'];
-				//console.log("Idd");
 				var ID = session.get_session(django_id, usertype);
-				//console.log("identify");
 				socket.emit('identify', {"ID": ID});
 				if (ID){
 					session.clear(django_id, usertype);
@@ -34,7 +32,7 @@ listening.setup(function(){
 
 				if (usertype == 'WEB'){
 					verifing[django_id] = socket.id;
-					request('http://192.168.0.102:8000/notificaciones/verify/' + django_id + '/', function (error, response, body) {
+					request('http://192.168.1.66:8000/notificaciones/verify/' + django_id + '/', function (error, response, body) {
 						if (!error && response.statusCode == 200) {
 							var data = JSON.parse(body);
 							if (data.socket_id == socket.id){
@@ -87,6 +85,7 @@ listening.setup(function(){
 				var usertype = message['usertype'];
 				var send_to = message['_send_to_'];
 				var key = session.get_session(django_id, usertype);
+				console.log("save");
 				if (key){
 					for (var to in send_to){
 						console.log(send_to[to]);
@@ -96,6 +95,22 @@ listening.setup(function(){
 								io.to(socket_id).emit('notix', message);
 						});
 					}
+				}
+			});
+			socket.on('user', function(message){
+				var django_id = message['django_id'];
+				var usertype = message['usertype'];
+				var webuser = message['webuser'];
+				var send_to = message['_send_to_'];
+				var key = session.get_session(django_id, usertype);
+				console.log("user", key);
+				if (key){
+					console.log(send_to, webuser);
+					listening.add_messages(send_to, webuser, [message], 
+						function(django_id, socket_id, message){
+							console.log('notix', socket_id, django_id, send_to);
+							io.to(socket_id).emit('notix', message);
+					});
 				}
 			});
 
@@ -125,6 +140,7 @@ listening.setup(function(){
 				var webuser = message['webuser'];
 				var type = message['type'];
 				var key = session.get_session(django_id, usertype);
+				console.log("messages", type, webuser);
 				if (key){
 					listening.get_messages(type, webuser, function(errors, messages){
 						for (var i in messages){
@@ -137,6 +153,7 @@ listening.setup(function(){
 	});
 
 });
+
 var verify = http.createServer(function(request, response) {
 	response.setHeader('Content-Type', 'text/html');
 	response.writeHead(200, {'Content-Type': 'text/plain'});
@@ -146,9 +163,6 @@ var verify = http.createServer(function(request, response) {
 		response.end(socket_id);
 	}
 });
-
-
-
 
 
 function hash(username, password, usertype){
