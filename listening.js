@@ -32,15 +32,14 @@ module.exports = {
 				'types': Array,
 				'data': Object,
 				'cron': String,
-				'ouner': String,
-				'class': String
+				'owner': String,
+				'class': String,
 			});
 			this.Schedule = mongoose.model('Schedule', schedule);
 			this.Schedule.find({}, function(err, raw){
 			
 				raw.forEach(function (doc, index, raw) {
-						//console.log(doc);
-						this.add_schedule(doc.types, doc.message, doc.cron, doc['class'], doc.ouner);
+					this.add_schedule(doc.types, doc.data, doc.cron, doc['class'], doc.owner);
 				}.bind(this));
 				
 			}.bind(this));
@@ -56,8 +55,8 @@ module.exports = {
 		this.Schedule.remove({}).exec();
 	},
 
-	delete_schedule: function(clazs, ouner, callback){
-		this.Schedule.findOne({'class': clazs, 'ouner': ouner}, function(err, doc) {
+	delete_schedule: function(clazs, owner, callback){
+		this.Schedule.findOne({'class': clazs, 'owner': owner}, function(err, doc) {
 			if (doc){
 				if (doc._id in this.schedule){
 					this.schedule[doc._id].cancel();
@@ -65,27 +64,27 @@ module.exports = {
 				}
 			}
 		}.bind(this));
-		console.log("remove", {'class': clazs, 'ouner': ouner});
-		this.Schedule.remove({'class': clazs, 'ouner': ouner}, callback);
+		console.log("remove", {'class': clazs, 'owner': owner});
+		this.Schedule.remove({'class': clazs, 'owner': owner}, callback);
 	},
 
-	add_schedule: function(types, message, cron, clazs, ouner, callback) {
+	add_schedule: function(types, message, cron, clazs, owner, callback) {
 
 		var schedule = new this.Schedule({
-			'types': types, 'data':message, 'cron':cron, 'class':clazs, 'ouner':ouner
+			'types': types, 'data':message, 'cron':cron, 'class':clazs, 'owner':owner
 		});
-
+		console.log('add_schedule', message);
 		schedule.save();
+		setTimeout(function (type, message, callback){
+			var task = tasks.scheduleJob(cron, function(){
+				for (var i in types){
+					console.log('message::', message);
+			    	this.add_messages_by_type(types[i], [message], callback);
+				}
+			}.bind(this));
+			this.schedule[schedule._id] = task;
+		}.bind(this), 0, types, message, callback);
 
-		//console.log("add", schedule._id);
-		var task = tasks.scheduleJob(cron, function(){
-			for (var i in types){
-				console.log(message);
-		    	this.add_messages_by_type(types[i], [message], callback);
-			}
-		}.bind(this));
-
-		this.schedule[schedule._id] = task;
 	},
 
 	update_schedule: function(type, message, cron, clazs, owner, callback) {

@@ -6,6 +6,8 @@ var listening = require('./listening');
 var url = require('url');
 var request = require('request');
 var verifing = {};
+var HOST = '192.168.1.70';
+var PORT = 8000;
 
 listening.setup(function(){
 	
@@ -15,6 +17,7 @@ listening.setup(function(){
 				var usertype = message['usertype'];
 				var ID = session.get_session(django_id, usertype);
 				socket.emit('identify', {"ID": ID});
+				console.log("¡¡");
 				if (ID){
 					session.clear(django_id, usertype);
 					console.log("active", django_id);
@@ -30,9 +33,11 @@ listening.setup(function(){
 				var username = message['username'];
 				var password = message['password'];
 
+				console.log("login", django_id);
+
 				if (usertype == 'WEB'){
 					verifing[django_id] = socket.id;
-					request('http://192.168.1.66:8000/notificaciones/verify/' + django_id + '/', function (error, response, body) {
+					request('http://' + HOST + ':' + PORT + '/notificaciones/verify/' + django_id + '/', function (error, response, body) {
 						if (!error && response.statusCode == 200) {
 							var data = JSON.parse(body);
 							if (data.socket_id == socket.id){
@@ -53,8 +58,9 @@ listening.setup(function(){
 							}else{
 								socket.emit('error-login');
 							}
-						}else
-						console.log(error, response.statusCode);
+						}else{
+							console.log(error, response);
+						}
 					});
 				}else {
 					session.login(django_id, username, password, usertype, function (success){
@@ -71,9 +77,10 @@ listening.setup(function(){
 			socket.on('cron', function(message){
 				var cron = message['cron'];
 				var clazs = message['class'];
-				var ouner = message['ouner'];
+				var owner = message['owner'];
 				var send_to = message['_send_to_'];
-				listening.update_schedule(send_to, message, cron, clazs, ouner, 
+				console.log(cron);
+				listening.update_schedule(send_to, message, cron, clazs, owner, 
 					function(django_id, socket_id, message){
 							console.log('notix', socket_id, django_id);
 							io.to(socket_id).emit('notix', message);
@@ -85,7 +92,7 @@ listening.setup(function(){
 				var usertype = message['usertype'];
 				var send_to = message['_send_to_'];
 				var key = session.get_session(django_id, usertype);
-				console.log("save");
+				console.log("save", message);
 				if (key){
 					for (var to in send_to){
 						console.log(send_to[to]);
