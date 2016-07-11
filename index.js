@@ -6,7 +6,7 @@ var listening = require('./listening');
 var url = require('url');
 var request = require('request');
 var verifing = {};
-var HOST = 'localhost';
+var HOST = '127.0.0.1';
 var PORT = 8000;
 
 listening.setup('test', function(){
@@ -17,10 +17,9 @@ listening.setup('test', function(){
 				var usertype = message['usertype'];
 				var ID = session.get_session(django_id, usertype);
 				socket.emit('identify', {"ID": ID});
-				console.log("¡¡");
+				console.log(message, 'identify', ID);
 				if (ID){
 					session.clear(django_id, usertype);
-					console.log("active", django_id);
 					listening.update_session(ID.type, ID.webuser, django_id, socket.id);
 				}
 			});
@@ -32,8 +31,6 @@ listening.setup('test', function(){
 				var usertype = message['usertype'];
 				var username = message['username'];
 				var password = message['password'];
-
-				console.log("login", django_id);
 
 				if (usertype == 'WEB'){
 					verifing[django_id] = socket.id;
@@ -59,7 +56,11 @@ listening.setup('test', function(){
 								socket.emit('error-login');
 							}
 						}else{
-							console.log(error, response.statusCode, 'http://' + HOST + ':' + PORT + '/notificaciones/verify/' + django_id + '/');
+							if (response){
+								console.log(error, response.statusCode, 'http://' + HOST + ':' + PORT + '/notificaciones/verify/' + django_id + '/');
+							}else{
+								console.log(error);
+							}
 						}
 					});
 				}else {
@@ -79,7 +80,6 @@ listening.setup('test', function(){
 				var clazs = message['class'];
 				var owner = message['owner'];
 				var send_to = message['_send_to_'];
-				console.log(cron);
 				listening.update_schedule(send_to, message, cron, clazs, owner, 
 					function(django_id, socket_id, message){
 							console.log('notix', socket_id, django_id);
@@ -92,7 +92,7 @@ listening.setup('test', function(){
 				var usertype = message['usertype'];
 				var send_to = message['_send_to_'];
 				var key = session.get_session(django_id, usertype);
-				console.log("save", message);
+				console.log("save", message, key);
 				if (key){
 					for (var to in send_to){
 						console.log(send_to[to]);
