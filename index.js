@@ -6,8 +6,8 @@ var listening = require('./listening');
 var url = require('url');
 var request = require('request');
 var verifing = {};
-var HOST = '192.168.1.70';
-var PORT = 8000;
+var HOST = 'localhost';
+var PORT = 8050;
 
 listening.setup(function(){
 	
@@ -176,8 +176,8 @@ function hash(username, password, usertype){
 	return new Buffer(username+'/'+password + '/' + usertype).toString('base64')
 }
 
-verify.listen(80, '0.0.0.0', function() {
-	console.log("Corriendo en el puerto ", 80);
+verify.listen(1192, '0.0.0.0', function() {
+	console.log("Corriendo en el puerto ", 1192);
 });
 
 server.listen(1196, '0.0.0.0', function() {
