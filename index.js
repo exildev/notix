@@ -6,10 +6,10 @@ var listening = require('./listening');
 var url = require('url');
 var request = require('request');
 var verifing = {};
-var HOST = '192.168.1.70';
+var HOST = 'localhost';
 var PORT = 8000;
 
-listening.setup(function(){
+listening.setup('test', function(){
 	
 	io.on('connection', function(socket) {
 			socket.on('identify', function(message) {
@@ -59,7 +59,7 @@ listening.setup(function(){
 								socket.emit('error-login');
 							}
 						}else{
-							console.log(error, response);
+							console.log(error, response.statusCode, 'http://' + HOST + ':' + PORT + '/notificaciones/verify/' + django_id + '/');
 						}
 					});
 				}else {
@@ -151,7 +151,7 @@ listening.setup(function(){
 				if (key){
 					listening.get_messages(type, webuser, function(errors, messages){
 						for (var i in messages){
-							console.log('message', socket.id);
+							console.log('message', messages[i]);
 							socket.emit('notix', messages[i]);
 						}
 					});
@@ -176,8 +176,8 @@ function hash(username, password, usertype){
 	return new Buffer(username+'/'+password + '/' + usertype).toString('base64')
 }
 
-verify.listen(80, '0.0.0.0', function() {
-	console.log("Corriendo en el puerto ", 80);
+verify.listen(1192, '0.0.0.0', function() {
+	console.log("Corriendo en el puerto ", 1192);
 });
 
 server.listen(1196, '0.0.0.0', function() {

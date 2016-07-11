@@ -4,8 +4,8 @@ var tasks = require('node-schedule');
 module.exports = {
 	schedule : {},
 
-	setup: function (callback){
-		mongoose.connect('mongodb://localhost/test');
+	setup: function (db, callback){
+		mongoose.connect('mongodb://localhost/' + db);
 		var db = mongoose.connection;
 		db.on('error', console.error.bind(console, 'connection error:'));
 		db.once('open', function (){
@@ -64,7 +64,6 @@ module.exports = {
 				}
 			}
 		}.bind(this));
-		console.log("remove", {'class': clazs, 'owner': owner});
 		this.Schedule.remove({'class': clazs, 'owner': owner}, callback);
 	},
 
