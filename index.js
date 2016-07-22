@@ -7,7 +7,7 @@ var url = require('url');
 var request = require('request');
 var verifing = {};
 var HOST = '104.236.33.228';
-var PORT = 8090;
+var PORT = 8050;
 var fs = require('fs');
 
 function log(){
