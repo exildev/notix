@@ -8,13 +8,18 @@ var request = require('request');
 var verifing = {};
 var HOST = '192.168.0.102';
 var PORT = 8000;
+var fs = require('fs');
 
-var access = fs.createWriteStream('node.access.log', { flags: 'a' });
-var error = fs.createWriteStream('node.error.log', { flags: 'a' });
-
-// redirect stdout / stderr
-proc.stdout.pipe(access);
-proc.stderr.pipe(error);
+function log(){
+	console.log('The "data to append" was appended to file!');
+	var message = '\n';
+	for (var i=0; i < arguments.length; i++) {
+        message += arguments[i] + ', ';
+    }
+	fs.appendFile('node.log', message, function (err) {
+	  if (err) throw err;
+	});
+}
 
 listening.setup('test', function(){
 	
@@ -24,7 +29,7 @@ listening.setup('test', function(){
 				var usertype = message['usertype'];
 				var ID = session.get_session(django_id, usertype);
 				socket.emit('identify', {"ID": ID});
-				console.log(message, 'identify', ID);
+				log(message, 'identify', ID);
 				if (ID){
 					session.clear(django_id, usertype);
 					listening.update_session(ID.type, ID.webuser, django_id, socket.id);
@@ -51,7 +56,7 @@ listening.setup('test', function(){
 										session.set_value(django_id, 'webuser', data.webuser, usertype);
 										listening.add_session(data.type, webuser, django_id, socket.id);
 										socket.on('disconnect', function(){
-											console.log('disconnect', socket.id);
+											log('disconnect', socket.id);
 											listening.delete_session(data.type, webuser, django_id);
 										});
 										socket.emit('success-login');
@@ -64,9 +69,9 @@ listening.setup('test', function(){
 							}
 						}else{
 							if (response){
-								console.log(error, response.statusCode, 'http://' + HOST + ':' + PORT + '/notificaciones/verify/' + django_id + '/');
+								log(error, response.statusCode, 'http://' + HOST + ':' + PORT + '/notificaciones/verify/' + django_id + '/');
 							}else{
-								console.log(error);
+								log(error);
 							}
 						}
 					});
@@ -89,7 +94,7 @@ listening.setup('test', function(){
 				var send_to = message['_send_to_'];
 				listening.update_schedule(send_to, message, cron, clazs, owner, 
 					function(django_id, socket_id, message){
-							console.log('notix', socket_id, django_id);
+							log('notix', socket_id, django_id);
 							io.to(socket_id).emit('notix', message);
 					});
 			});
@@ -99,13 +104,13 @@ listening.setup('test', function(){
 				var usertype = message['usertype'];
 				var send_to = message['_send_to_'];
 				var key = session.get_session(django_id, usertype);
-				console.log("save", message, key);
+				log("save", message, key);
 				if (key){
 					for (var to in send_to){
-						console.log(send_to[to]);
+						log(send_to[to]);
 						listening.add_messages_by_type(send_to[to], [message], 
 							function(django_id, socket_id, message){
-								console.log('notix', socket_id, django_id, send_to[to]);
+								log('notix', socket_id, django_id, send_to[to]);
 								io.to(socket_id).emit('notix', message);
 						});
 					}
@@ -117,12 +122,12 @@ listening.setup('test', function(){
 				var webuser = message['webuser'];
 				var send_to = message['_send_to_'];
 				var key = session.get_session(django_id, usertype);
-				console.log("user", key);
+				log("user", key);
 				if (key){
-					console.log(send_to, webuser);
+					log(send_to, webuser);
 					listening.add_messages(send_to, webuser, [message], 
 						function(django_id, socket_id, message){
-							console.log('notix', socket_id, django_id, send_to);
+							log('notix', socket_id, django_id, send_to);
 							io.to(socket_id).emit('notix', message);
 					});
 				}
@@ -154,11 +159,11 @@ listening.setup('test', function(){
 				var webuser = message['webuser'];
 				var type = message['type'];
 				var key = session.get_session(django_id, usertype);
-				console.log("messages", type, webuser);
+				log("messages", type, webuser);
 				if (key){
 					listening.get_messages(type, webuser, function(errors, messages){
 						for (var i in messages){
-							console.log('message', messages[i]);
+							log('message', messages[i]);
 							socket.emit('notix', messages[i]);
 						}
 					});
@@ -184,9 +189,9 @@ function hash(username, password, usertype){
 }
 
 verify.listen(1192, '0.0.0.0', function() {
-	console.log("Corriendo en el puerto ", 1192);
+	log("Corriendo en el puerto ", 1192);
 });
 
 server.listen(1196, '0.0.0.0', function() {
-	console.log("Corriendo en el puerto ", 1196);
+	log("Corriendo en el puerto ", 1196);
 });
