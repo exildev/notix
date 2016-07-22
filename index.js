@@ -125,7 +125,7 @@ listening.setup('test', function(){
 				log("user", JSON.stringify(key));
 
 				if (key){
-					log(send_to, webuser, message);
+					log(send_to, webuser, JSON.stringify(message));
 					listening.add_messages(send_to, webuser, [message], 
 						function(django_id, socket_id, message){
 							log('notix', socket_id, django_id, send_to);
