@@ -84,7 +84,7 @@ module.exports = {
 		var schedule = new this.Schedule({
 			'types': types, 'data':message, 'cron':cron, 'class':clazs, 'owner':owner
 		});
-		console.log('add_schedule', message);
+		//console.log('add_schedule', message);
 		schedule.save();
 		setTimeout(function (type, message, callback){
 			var task = tasks.scheduleJob(cron, function(){
