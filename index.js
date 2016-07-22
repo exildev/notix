@@ -122,7 +122,7 @@ listening.setup('test', function(){
 				var webuser = message['webuser'];
 				var send_to = message['_send_to_'];
 				var key = session.get_session(django_id, usertype);
-				log("user", key);
+				log("user", JSON.stringify(key));
 				if (key){
 					log(send_to, webuser);
 					listening.add_messages(send_to, webuser, [message], 
@@ -133,13 +133,14 @@ listening.setup('test', function(){
 				}
 			});
 
-			socket.on('visited', function(message){
+			socket.on('visited', function(message) {
 				var django_id = message['django_id'];
 				var usertype = message['usertype'];
 				var webuser = message['webuser'];
 				var message_id = message['message_id'];
 				var type = message['type'];
 				var key = session.get_session(django_id, usertype);
+				
 				if (key){
 					listening.visit_message(type, webuser, message_id, django_id, function (errors, session){
 						for (var i in session.sessions){
