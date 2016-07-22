@@ -6,7 +6,7 @@ var listening = require('./listening');
 var url = require('url');
 var request = require('request');
 var verifing = {};
-var HOST = '192.168.33.228';
+var HOST = '104.236.33.228';
 var PORT = 8090;
 var fs = require('fs');
 
