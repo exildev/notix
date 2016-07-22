@@ -1,6 +1,17 @@
 var mongoose = require('mongoose');
 var tasks = require('node-schedule');
 
+function log(){
+	console.log('The "data to append" was appended to file!');
+	var message = '\n';
+	for (var i=0; i < arguments.length; i++) {
+        message += arguments[i] + ', ';
+    }
+	fs.appendFile('node.log', message, function (err) {
+	  if (err) throw err;
+	});
+}
+
 module.exports = {
 	schedule : {},
 
@@ -115,13 +126,15 @@ module.exports = {
 	},
 
 	add_messages: function (type, webuser, messages, callback) {
+
 		for (var i in messages){
-			console.log("TYPE", type);
+			log("TYPE", type);
 			var message = new this.Message({'type': type, 'webuser': webuser, 'data': messages[i], 'visited': false});
 			message.save();
 		}
+		
 		this.Session.find({'type': type, 'webuser': webuser}, {}, function (err, raw){
-			console.log('type', raw);
+			log('type', raw);
 			raw.forEach(function (doc, index, raw) {
 				for (var j in doc.sessions) {
 					if (callback){

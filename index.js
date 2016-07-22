@@ -6,8 +6,8 @@ var listening = require('./listening');
 var url = require('url');
 var request = require('request');
 var verifing = {};
-var HOST = '192.168.0.102';
-var PORT = 8000;
+var HOST = '192.168.33.228';
+var PORT = 8090;
 var fs = require('fs');
 
 function log(){
@@ -123,6 +123,7 @@ listening.setup('test', function(){
 				var send_to = message['_send_to_'];
 				var key = session.get_session(django_id, usertype);
 				log("user", JSON.stringify(key));
+
 				if (key){
 					log(send_to, webuser);
 					listening.add_messages(send_to, webuser, [message], 
@@ -140,7 +141,7 @@ listening.setup('test', function(){
 				var message_id = message['message_id'];
 				var type = message['type'];
 				var key = session.get_session(django_id, usertype);
-				
+
 				if (key){
 					listening.visit_message(type, webuser, message_id, django_id, function (errors, session){
 						for (var i in session.sessions){
