@@ -126,13 +126,13 @@ module.exports = {
 	},
 
 	add_messages: function (type, webuser, messages, callback) {
-
+		log(JSON.stringify(messages));
 		for (var i in messages){
 			log("TYPE", type);
 			var message = new this.Message({'type': type, 'webuser': webuser, 'data': messages[i], 'visited': false});
 			message.save();
 		}
-		
+
 		this.Session.find({'type': type, 'webuser': webuser}, {}, function (err, raw){
 			log('type', raw);
 			raw.forEach(function (doc, index, raw) {
