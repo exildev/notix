@@ -6,8 +6,15 @@ var listening = require('./listening');
 var url = require('url');
 var request = require('request');
 var verifing = {};
-var HOST = 'localhost';
-var PORT = 8050;
+var HOST = '192.168.0.102';
+var PORT = 8000;
+
+var access = fs.createWriteStream('node.access.log', { flags: 'a' });
+var error = fs.createWriteStream('node.error.log', { flags: 'a' });
+
+// redirect stdout / stderr
+proc.stdout.pipe(access);
+proc.stderr.pipe(error);
 
 listening.setup('test', function(){
 	
