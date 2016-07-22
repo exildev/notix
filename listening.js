@@ -3,11 +3,11 @@ var tasks = require('node-schedule');
 var fs = require('fs');
 
 function log(){
-	console.log('The "data to append" was appended to file!');
 	var message = '\n';
 	for (var i=0; i < arguments.length; i++) {
         message += arguments[i] + ', ';
     }
+    console.log(message);
 	fs.appendFile('node.log', message, function (err) {
 	  if (err) throw err;
 	});
