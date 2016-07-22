@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var tasks = require('node-schedule');
+var fs = require('fs');
 
 function log(){
 	console.log('The "data to append" was appended to file!');
