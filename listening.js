@@ -62,10 +62,13 @@ module.exports = {
 			this.get_today_crons();
 			setInterval(function (){
 				console.log("check:");
+				var now = new Date();
+				if (now.getHour() == 0){
+					this.get_today_crons();
+				}
 				this.Schedule.find({'visited':false}, 	function(err, raw){
 					raw.forEach(function (doc, index, raw) {
 						var date = new Date(doc.start);
-						var now = new Date();
 						console.log(now >= date);
 						if (now >= date){
 							doc.visited = true;
