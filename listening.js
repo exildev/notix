@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var tasks = require('node-schedule');
+var request = require('request');
 var fs = require('fs');
 
 function log(){
@@ -15,8 +16,14 @@ function log(){
 
 module.exports = {
 	schedule : {},
+	cron_stop: false,
+	HOST: 'localhost',
+	PORT: '80',
 
-	setup: function (db, callback){
+
+	setup: function (db, HOST, PORT, callback){
+		this.HOST = HOST;
+		this.PORT = PORT;
 		mongoose.connect('mongodb://localhost/' + db);
 		var db = mongoose.connection;
 		db.on('error', console.error.bind(console, 'connection error:'));
@@ -41,63 +48,72 @@ module.exports = {
 			this.Session = mongoose.model('Session', session);
 
 			var schedule = mongoose.Schema({
-				'types': Array,
-				'data': Object,
-				'cron': String,
-				'owner': String,
-				'class': String,
+				'pk': Number,
+				'start': String,
+				'users': String,
+				'color': String,
+				'_send_to_': String,
+				'type': String,
+				'visited': Boolean
 			});
 			this.Schedule = mongoose.model('Schedule', schedule);
-			this.Schedule.find({}, function(err, raw){
 			
-				raw.forEach(function (doc, index, raw) {
-					this.add_schedule(doc.types, doc.data, doc.cron, doc['class'], doc.owner);
+
+			this.get_today_crons();
+			setInterval(function (){
+				//console.log("check:");
+				this.Schedule.find({'visited':false}, 	function(err, raw){
+					raw.forEach(function (doc, index, raw) {
+						var date = new Date(doc.start);
+						var now = new Date();
+						//console.log(now >= date);
+						if (now >= date){
+							doc.visited = true;
+							doc.save();
+							if (doc.type == 'Actividad'){
+								var type = doc['_send_to_'];
+								var users = doc['users'];
+								if (users){
+									users = users.split(',');
+									for (var j in users){
+										this.add_messages(type, users[j], doc);
+									}
+								}
+							}
+						}
+					}.bind(this));
 				}.bind(this));
-				
-			}.bind(this));
-			
+			}.bind(this), 5000);
 			callback();
 		}.bind(this));
 		
 	},
 
+	add_schedule: function(schedule){
+		this.Schedule.find({'pk': schedule.pk}).count(function(err, count){
+			if (count == 0){
+				schedule['visited'] = false;
+				var sch = new this.Schedule(schedule);
+				sch.save();
+			}
+		}.bind(this));
+	},
+
+	get_today_crons: function(){
+		var now = new Date();
+		var today = now.getFullYear() + "-" + now.getMonth() + "-" + now.getDate();
+		request('http://' + this.HOST + ':' + this.PORT + '/notificaciones/calendar/?start=' + today + '&end=' + today, function (error, response, body) {
+			var schedules = JSON.parse(body);
+			for (var i in schedules){
+				this.add_schedule(schedules[i]);
+			}
+		}.bind(this));
+	},
+
 	reset: function(){
 		this.Session.remove({}).exec();
 		this.Message.remove({}).exec();
-		this.Schedule.remove({}).exec();
 	},
-
-	delete_schedule: function(clazs, owner, callback){
-		this.Schedule.findOne({'class': clazs, 'owner': owner}, function(err, doc) {
-			if (doc){
-				if (doc._id in this.schedule){
-					this.schedule[doc._id].cancel();
-					delete this.schedule[doc._id];
-				}
-			}
-		}.bind(this));
-		this.Schedule.remove({'class': clazs, 'owner': owner}, callback);
-	},
-
-	add_schedule: function(types, message, cron, clazs, owner, callback) {
-
-		var schedule = new this.Schedule({
-			'types': types, 'data':message, 'cron':cron, 'class':clazs, 'owner':owner
-		});
-		//console.log('add_schedule', message);
-		schedule.save();
-		setTimeout(function (type, message, callback){
-			var task = tasks.scheduleJob(cron, function(){
-				for (var i in types){
-					console.log('message::', message);
-			    	this.add_messages_by_type(types[i], [message], callback);
-				}
-			}.bind(this));
-			this.schedule[schedule._id] = task;
-		}.bind(this), 0, types, message, callback);
-
-	},
-
 	update_schedule: function(type, message, cron, clazs, owner, callback) {
 		this.delete_schedule(clazs, owner, function(){
 			this.add_schedule(type, message, cron, clazs, owner, callback);
@@ -127,15 +143,14 @@ module.exports = {
 	},
 
 	add_messages: function (type, webuser, messages, callback) {
-		log(JSON.stringify(messages));
+		
 		for (var i in messages){
-			log("TYPE", type);
 			var message = new this.Message({'type': type, 'webuser': webuser, 'data': messages[i], 'visited': false});
 			message.save();
 		}
 
 		this.Session.find({'type': type, 'webuser': webuser}, {}, function (err, raw){
-			log('type', raw);
+			console.log('type', type, webuser, raw);
 			raw.forEach(function (doc, index, raw) {
 				for (var j in doc.sessions) {
 					if (callback){

@@ -22,9 +22,9 @@ function log(){
 	});
 }
 
-listening.setup('test', function(){
-	
+listening.setup('test', HOST, PORT, function(){
 	io.on('connection', function(socket) {
+
 			socket.on('identify', function(message) {
 				var django_id = message['django_id'];
 				var usertype = message['usertype'];
@@ -89,15 +89,7 @@ listening.setup('test', function(){
 			});
 
 			socket.on('cron', function(message){
-				var cron = message['cron'];
-				var clazs = message['class'];
-				var owner = message['owner'];
-				var send_to = message['_send_to_'];
-				listening.update_schedule(send_to, message, cron, clazs, owner, 
-					function(django_id, socket_id, message){
-							log('notix', socket_id, django_id);
-							io.to(socket_id).emit('notix', message);
-					});
+				listening.get_today_crons();
 			});
 
 			socket.on('save', function(message){
