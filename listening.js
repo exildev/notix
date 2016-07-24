@@ -63,7 +63,7 @@ module.exports = {
 			setInterval(function (){
 				console.log("check:");
 				var now = new Date();
-				if (now.getHour() == 0){
+				if (now.getHours() == 0){
 					this.get_today_crons();
 				}
 				this.Schedule.find({'visited':false}, 	function(err, raw){
