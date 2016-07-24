@@ -82,6 +82,14 @@ module.exports = {
 										this.add_messages(type, users[j], doc);
 									}
 								}
+							}else
+							if (doc.type == 'Seguimiento' || doc.type == 'Cumple'){
+								var types = doc['_send_to_'];
+								if (types){
+									for (var type in types){
+										this.add_messages_by_type(type, doc);
+									}
+								}
 							}
 						}
 					}.bind(this));
