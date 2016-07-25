@@ -21,7 +21,7 @@ module.exports = {
 	PORT: '80',
 
 
-	setup: function (db, HOST, PORT, callback){
+	setup: function (db, HOST, PORT, init, callback){
 		this.HOST = HOST;
 		this.PORT = PORT;
 		mongoose.connect('mongodb://localhost/' + db);
@@ -55,6 +55,7 @@ module.exports = {
 				'_send_to_': Array,
 				'type': String,
 				'title': String,
+				'url': String,
 				'visited': Boolean
 			});
 			this.Schedule = mongoose.model('Schedule', schedule);
@@ -80,8 +81,14 @@ module.exports = {
 								if (users){
 									users = users.split(',');
 									for (var j in users){
-										console.log(type, users[j], doc);
-										this.add_messages(type, users[j], doc);
+										//console.log(type, users[j], doc);
+										this.add_messages(type, users[j], {
+											'data': {
+												'title': doc.title,
+												'html': doc.title,
+												'url': doc.url
+											}
+										}, init);
 									}
 								}
 							}else
@@ -89,8 +96,14 @@ module.exports = {
 								var types = doc['_send_to_'];
 								if (types){
 									for (var i in types){
-										console.log(types[i], doc);
-										this.add_messages_by_type(types[i], doc);
+										//console.log(types[i], doc);
+										this.add_messages_by_type(types[i], {
+											'data': {
+												'title': doc.title,
+												'html': doc.title,
+												'url': doc.url
+											}
+										}, init);
 									}
 								}
 							}
@@ -116,7 +129,7 @@ module.exports = {
 	get_today_crons: function(){
 		var now = new Date();
 		var today = now.getFullYear() + "-" + now.getMonth() + "-" + now.getDate();
-		console.log('http://' + this.HOST + ':' + this.PORT + '/notificaciones/calendar/?start=' + today + '&end=' + today);
+		//console.log('http://' + this.HOST + ':' + this.PORT + '/notificaciones/calendar/?start=' + today + '&end=' + today);
 		request('http://' + this.HOST + ':' + this.PORT + '/notificaciones/calendar/?start=' + today + '&end=' + today, function (error, response, body) {
 			var schedules = JSON.parse(body);
 			for (var i in schedules){
@@ -139,6 +152,8 @@ module.exports = {
 		this.Session.find({'type': type}, {}, function(err, raw){
 			
 			raw.forEach(function (doc, index, raw) {
+
+				console.log({'type': type}, raw);
 				for (var i in messages) {
 					var message = new this.Message({
 						'type': type,
@@ -159,7 +174,7 @@ module.exports = {
 
 	add_messages: function (type, webuser, messages, callback) {
 		
-		for (var i in messages){
+		for (var i in messages) {
 			var message = new this.Message({'type': type, 'webuser': webuser, 'data': messages[i], 'visited': false});
 			message.save();
 		}

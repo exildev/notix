@@ -6,8 +6,8 @@ var listening = require('./listening');
 var url = require('url');
 var request = require('request');
 var verifing = {};
-var HOST = '104.236.33.228';
-var PORT = 8050;
+var HOST = '192.168.1.64';//'104.236.33.228';
+var PORT = 8000;//8050;
 var fs = require('fs');
 
 function log(){
@@ -22,7 +22,15 @@ function log(){
 	});
 }
 
-listening.setup('test', HOST, PORT, function(){
+
+
+listening.setup('test', HOST, PORT, 
+	function(django_id, socket_id, message){
+		log('notix', socket_id, django_id);
+		io.to(socket_id).emit('notix', message);
+	},
+
+	function(){
 	io.on('connection', function(socket) {
 
 			socket.on('identify', function(message) {
@@ -123,7 +131,8 @@ listening.setup('test', HOST, PORT, function(){
 						function(django_id, socket_id, message){
 							log('notix', socket_id, django_id, send_to);
 							io.to(socket_id).emit('notix', message);
-					});
+						}
+					);
 				}
 			});
 
