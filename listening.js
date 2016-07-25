@@ -8,7 +8,7 @@ function log(){
 	for (var i=0; i < arguments.length; i++) {
         message += arguments[i] + ', ';
     }
-    console.log(message);
+    //console.log(message);
 	fs.appendFile('node.log', message, function (err) {
 	  if (err) throw err;
 	});
@@ -52,8 +52,9 @@ module.exports = {
 				'start': String,
 				'users': String,
 				'color': String,
-				'_send_to_': String,
+				'_send_to_': Array,
 				'type': String,
+				'title': String,
 				'visited': Boolean
 			});
 			this.Schedule = mongoose.model('Schedule', schedule);
@@ -71,14 +72,15 @@ module.exports = {
 						var date = new Date(doc.start);
 						console.log(now >= date);
 						if (now >= date){
-							doc.visited = true;
+							doc.visited = true;  
 							doc.save();
-							if (doc.type == 'Actividad'){
-								var type = doc['_send_to_'];
+							if (doc.type == 'Actividad') {
+								var type = doc['_send_to_'][0];
 								var users = doc['users'];
 								if (users){
 									users = users.split(',');
 									for (var j in users){
+										console.log(type, users[j], doc);
 										this.add_messages(type, users[j], doc);
 									}
 								}
@@ -86,8 +88,9 @@ module.exports = {
 							if (doc.type == 'Seguimiento' || doc.type == 'Cumple'){
 								var types = doc['_send_to_'];
 								if (types){
-									for (var type in types){
-										this.add_messages_by_type(type, doc);
+									for (var i in types){
+										console.log(types[i], doc);
+										this.add_messages_by_type(types[i], doc);
 									}
 								}
 							}
@@ -112,7 +115,7 @@ module.exports = {
 
 	get_today_crons: function(){
 		var now = new Date();
-		var today = now.getFullYear() + "-" + now.getMonth() + "-" + now.getDate();
+		var today = now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate();
 		request('http://' + this.HOST + ':' + this.PORT + '/notificaciones/calendar/?start=' + today + '&end=' + today, function (error, response, body) {
 			var schedules = JSON.parse(body);
 			for (var i in schedules){
@@ -161,7 +164,6 @@ module.exports = {
 		}
 
 		this.Session.find({'type': type, 'webuser': webuser}, {}, function (err, raw){
-			console.log('type', type, webuser, raw);
 			raw.forEach(function (doc, index, raw) {
 				for (var j in doc.sessions) {
 					if (callback){
