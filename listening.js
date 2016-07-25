@@ -115,7 +115,8 @@ module.exports = {
 
 	get_today_crons: function(){
 		var now = new Date();
-		var today = now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate();
+		var today = now.getFullYear() + "-" + now.getMonth() + "-" + now.getDate();
+		console.log('http://' + this.HOST + ':' + this.PORT + '/notificaciones/calendar/?start=' + today + '&end=' + today);
 		request('http://' + this.HOST + ':' + this.PORT + '/notificaciones/calendar/?start=' + today + '&end=' + today, function (error, response, body) {
 			var schedules = JSON.parse(body);
 			for (var i in schedules){
