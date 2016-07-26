@@ -63,7 +63,7 @@ module.exports = {
 
 			this.get_today_crons();
 			setInterval(function (){
-				console.log("check:");
+				//console.log("check:");
 				var now = new Date();
 				if (now.getHours() == 0){
 					this.get_today_crons();
@@ -71,7 +71,7 @@ module.exports = {
 				this.Schedule.find({'visited':false}, 	function(err, raw){
 					raw.forEach(function (doc, index, raw) {
 						var date = new Date(doc.start);
-						console.log(now >= date);
+						//console.log(now >= date);
 						if (now >= date){
 							doc.visited = true;  
 							doc.save();
@@ -81,7 +81,7 @@ module.exports = {
 								if (users){
 									users = users.split(',');
 									for (var j in users){
-										//console.log(type, users[j], doc);
+										////console.log(type, users[j], doc);
 										this.add_messages(type, users[j], {
 											'data': {
 												'title': doc.title,
@@ -96,7 +96,7 @@ module.exports = {
 								var types = doc['_send_to_'];
 								if (types){
 									for (var i in types){
-										//console.log(types[i], doc);
+										////console.log(types[i], doc);
 										this.add_messages_by_type(types[i], {
 											'data': {
 												'title': doc.title,
@@ -129,7 +129,7 @@ module.exports = {
 	get_today_crons: function(){
 		var now = new Date();
 		var today = now.getFullYear() + "-" + now.getMonth() + "-" + now.getDate();
-		//console.log('http://' + this.HOST + ':' + this.PORT + '/notificaciones/calendar/?start=' + today + '&end=' + today);
+		////console.log('http://' + this.HOST + ':' + this.PORT + '/notificaciones/calendar/?start=' + today + '&end=' + today);
 		request('http://' + this.HOST + ':' + this.PORT + '/notificaciones/calendar/?start=' + today + '&end=' + today, function (error, response, body) {
 			var schedules = JSON.parse(body);
 			for (var i in schedules){
@@ -153,7 +153,7 @@ module.exports = {
 			
 			raw.forEach(function (doc, index, raw) {
 
-				console.log({'type': type}, raw);
+				//console.log({'type': type}, raw);
 				for (var i in messages) {
 					var message = new this.Message({
 						'type': type,
