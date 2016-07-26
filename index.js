@@ -127,8 +127,8 @@ listening.setup('test', HOST, PORT,
 
 				if (key){
 					for (var i in webusers){
-						log(send_to, webusers[i*, JSON.stringify(message));
-						listening.add_messages(send_to, webusers[i*, [message], 
+						log(send_to, webusers[i], JSON.stringify(message));
+						listening.add_messages(send_to, webusers[i], [message], 
 							function(django_id, socket_id, message){
 								log('notix', socket_id, django_id, send_to);
 								io.to(socket_id).emit('notix', message);
