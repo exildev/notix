@@ -126,13 +126,15 @@ listening.setup('test', HOST, PORT,
 				log("user", JSON.stringify(key));
 
 				if (key){
-					log(send_to, webuser, JSON.stringify(message));
-					listening.add_messages(send_to, webuser, [message], 
-						function(django_id, socket_id, message){
-							log('notix', socket_id, django_id, send_to);
-							io.to(socket_id).emit('notix', message);
-						}
-					);
+					for (var i in webusers){
+						log(send_to, webusers[i*, JSON.stringify(message));
+						listening.add_messages(send_to, webusers[i*, [message], 
+							function(django_id, socket_id, message){
+								log('notix', socket_id, django_id, send_to);
+								io.to(socket_id).emit('notix', message);
+							}
+						);
+					}
 				}
 			});
 
