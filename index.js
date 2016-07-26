@@ -120,7 +120,7 @@ listening.setup('test', HOST, PORT,
 			socket.on('user', function(message){
 				var django_id = message['django_id'];
 				var usertype = message['usertype'];
-				var webuser = message['webuser'];
+				var webusers = message['webuser'];
 				var send_to = message['_send_to_'];
 				var key = session.get_session(django_id, usertype);
 				log("user", JSON.stringify(key));
