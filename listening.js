@@ -86,7 +86,7 @@ module.exports = {
 											'data': {
 												'title': doc.title,
 												'html': doc.title,
-												'url': doc.url
+												'url': doc.urli
 											}
 										}, init);
 									}
@@ -101,7 +101,7 @@ module.exports = {
 											'data': {
 												'title': doc.title,
 												'html': doc.title,
-												'url': doc.url
+												'url': doc.urli
 											}
 										}, init);
 									}
