@@ -46,7 +46,7 @@ module.exports = {
 				]
 			});
 			this.Session = mongoose.model('Session', session);
-
+			this.Session.remove({}).exec();
 			var schedule = mongoose.Schema({
 				'pk': Number,
 				'start': String,

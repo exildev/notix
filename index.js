@@ -52,6 +52,7 @@ listening.setup('test', HOST, PORT,
 				var usertype = message['usertype'];
 				var username = message['username'];
 				var password = message['password'];
+				console.log('login', webuser, django_id);
 
 				if (usertype == 'WEB'){
 					verifing[django_id] = socket.id;
@@ -147,8 +148,10 @@ listening.setup('test', HOST, PORT,
 				var key = session.get_session(django_id, usertype);
 
 				if (key){
+					console.log("visit me");
 					listening.visit_message(type, webuser, message_id, django_id, function (errors, session){
 						for (var i in session.sessions){
+							console.log("visit you", session.webuser, session.sessions[i].session_id);
 							io.to(session.sessions[i].socket_id).emit('visited', {
 								'session_id': session.sessions[i].session_id, 
 								'message_id': message_id,
