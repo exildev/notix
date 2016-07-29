@@ -207,7 +207,9 @@ module.exports = {
 		this.add_session(type, webuser, session_id, socket_id, callback);
 	},
 	add_session: function (type, webuser, session_id, socket_id, callback){
+		console.log("acc session", webuser, session_id, socket_id);
 		var session = this.Session.find({'type': type, 'webuser': webuser}, function(err, raw){
+			console.log("raw", raw);
 			if (raw.length == 0){
 				var session = new this.Session({
 					'type': type,
