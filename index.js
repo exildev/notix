@@ -16,7 +16,7 @@ function log(){
 	for (var i=0; i < arguments.length; i++) {
         message += arguments[i] + ', ';
     }
-    console.log(message);
+    //console.log(message);
 	fs.appendFile('node.log', message, function (err) {
 	  if (err) throw err;
 	});
@@ -26,7 +26,7 @@ function log(){
 
 listening.setup('test', HOST, PORT, 
 	function(django_id, socket_id, message){
-		log('notix', socket_id, django_id);
+		//log('notix', socket_id, django_id);
 		io.to(socket_id).emit('notix', message);
 	},
 
