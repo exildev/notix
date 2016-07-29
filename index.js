@@ -105,6 +105,8 @@ listening.setup('test', HOST, PORT,
 				var django_id = message['django_id'];
 				var usertype = message['usertype'];
 				var send_to = message['_send_to_'];
+				var exclude = message['exclude'];
+
 				var key = session.get_session(django_id, usertype);
 				log("save", message, key);
 				if (key){
@@ -114,7 +116,7 @@ listening.setup('test', HOST, PORT,
 							function(django_id, socket_id, message){
 								log('notix', socket_id, django_id, send_to[to]);
 								io.to(socket_id).emit('notix', message);
-						});
+						}, exclude);
 					}
 				}
 			});

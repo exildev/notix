@@ -148,23 +148,25 @@ module.exports = {
 		}.bind(this));
 	},
 
-	add_messages_by_type: function (type, messages, callback) {
+	add_messages_by_type: function (type, messages, callback, exclude) {
 		this.Session.find({'type': type}, {}, function(err, raw){
 			
 			raw.forEach(function (doc, index, raw) {
 
 				//console.log({'type': type}, raw);
-				for (var i in messages) {
-					var message = new this.Message({
-						'type': type,
-						'webuser': doc.webuser,
-						'data': messages[i],
-						'visited': false
-					});
-					message.save();
-					for (var j in doc.sessions){
-						if (callback){
-							callback(doc.sessions[j].session_id, doc.sessions[j].socket_id, message);
+				if (!exclude || exclude.indexOf(doc.webuser) < 0){
+					for (var i in messages) {
+						var message = new this.Message({
+							'type': type,
+							'webuser': doc.webuser,
+							'data': messages[i],
+							'visited': false
+						});
+						message.save();
+						for (var j in doc.sessions){
+							if (callback){
+								callback(doc.sessions[j].session_id, doc.sessions[j].socket_id, message);
+							}
 						}
 					}
 				}
