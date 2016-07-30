@@ -109,6 +109,7 @@ listening.setup('test', HOST, PORT,
 
 				var key = session.get_session(django_id, usertype);
 				log("save", message, key);
+				console.log("save", exclude);
 				if (key){
 					for (var to in send_to){
 						log(send_to[to]);
