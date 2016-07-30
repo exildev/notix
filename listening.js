@@ -231,6 +231,12 @@ module.exports = {
 				this.Session.update(
 					{'type': type, 'webuser': webuser}, 
 					{
+						$pull: {'sessions': {'session_id': session_id}}
+					}
+				).exec();
+				this.Session.update(
+					{'type': type, 'webuser': webuser}, 
+					{
 						//$pull: {'sessions': {'session_id': session_id}},
 						$push: {'sessions': {'session_id': session_id, 'socket_id': socket_id}}
 					}
