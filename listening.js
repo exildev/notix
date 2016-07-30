@@ -200,6 +200,7 @@ module.exports = {
 			{'multy': true},
 			function(err, raw) {
 				var users = {};
+				console.log(raw);
 				raw.forEach(function (doc, index, raw) {
 					if (!users[doc.webuser]){
 						users[doc.webuser] = [doc._id];
