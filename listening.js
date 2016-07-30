@@ -192,14 +192,26 @@ module.exports = {
 		});
 	},
 
-	visit_message: function (type, webuser, message_id, session_id, callback){
+	visit_messages: function (type, webuser, messages_id, session_id, callback){
+		
 		this.Message.update(
-			{'_id': message_id},
+			{'_id': {'$in':messages_id}},
 			{'visited': true},
-			function(err, doc){
-				this.Session.findOne({'type': type, 'webuser':webuser}, function(err, doc){
-					callback(err, doc);
+			{'multy': true},
+			function(err, raw) {
+				var users = {};
+				raw.forEach(function (doc, index, raw) {
+					if (!users[doc.webuser]){
+						users[doc.webuser] = [doc._id];
+					}else{
+						users[doc.webuser].push(doc._id);
+					}
 				});
+				for (var webuser in users){
+					this.Session.findOne({'type': type, 'webuser':webuser}, function(err, doc){
+						callback(err, doc, users[webuser]);
+					});
+				}
 			}.bind(this)
 		);
 	},

@@ -145,18 +145,18 @@ listening.setup('test', HOST, PORT,
 				var django_id = message['django_id'];
 				var usertype = message['usertype'];
 				var webuser = message['webuser'];
-				var message_id = message['message_id'];
+				var messages_id = message['message_id'];
 				var type = message['type'];
 				var key = session.get_session(django_id, usertype);
 
 				if (key){
 					console.log("visit me");
-					listening.visit_message(type, webuser, message_id, django_id, function (errors, session){
+					listening.visit_messages(type, webuser, messages_id, django_id, function (errors, session, messages_id){
 						for (var i in session.sessions){
 							console.log("visit you", session.webuser, session.sessions[i].session_id);
 							io.to(session.sessions[i].socket_id).emit('visited', {
 								'session_id': session.sessions[i].session_id, 
-								'message_id': message_id,
+								'messages_id': messages_id,
 								'socket_id': session.sessions[i].socket_id
 							});
 						}
