@@ -197,7 +197,7 @@ module.exports = {
 		this.Message.update(
 			{'_id': {'$in':messages_id}},
 			{'visited': true},
-			{'multy': true},
+			{'multi': true},
 			function(err, raw) {
 				this.Session.findOne({'type': type, 'webuser':webuser}, function(err, doc){
 					callback(err, doc);
