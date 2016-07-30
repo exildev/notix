@@ -145,7 +145,7 @@ listening.setup('test', HOST, PORT,
 				var django_id = message['django_id'];
 				var usertype = message['usertype'];
 				var webuser = message['webuser'];
-				var messages_id = message['message_id'];
+				var messages_id = message['messages_id'];
 				var type = message['type'];
 				var key = session.get_session(django_id, usertype);
 
