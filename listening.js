@@ -199,20 +199,9 @@ module.exports = {
 			{'visited': true},
 			{'multy': true},
 			function(err, raw) {
-				var users = {};
-				console.log(raw);
-				raw.forEach(function (doc, index, raw) {
-					if (!users[doc.webuser]){
-						users[doc.webuser] = [doc._id];
-					}else{
-						users[doc.webuser].push(doc._id);
-					}
+				this.Session.findOne({'type': type, 'webuser':webuser}, function(err, doc){
+					callback(err, doc);
 				});
-				for (var webuser in users){
-					this.Session.findOne({'type': type, 'webuser':webuser}, function(err, doc){
-						callback(err, doc, users[webuser]);
-					});
-				}
 			}.bind(this)
 		);
 	},

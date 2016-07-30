@@ -151,7 +151,7 @@ listening.setup('test', HOST, PORT,
 
 				if (key){
 					console.log("visit me");
-					listening.visit_messages(type, webuser, messages_id, django_id, function (errors, session, messages_id){
+					listening.visit_messages(type, webuser, messages_id, django_id, function (errors, session){
 						for (var i in session.sessions){
 							console.log("visit you", session.webuser, session.sessions[i].session_id);
 							io.to(session.sessions[i].socket_id).emit('visited', {
