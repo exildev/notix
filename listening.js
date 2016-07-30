@@ -223,7 +223,7 @@ module.exports = {
 					]
 				});
 				session.save(function (){
-					if (callback){
+					if (callback) {
 						callback(session);
 					}
 				});
