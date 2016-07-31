@@ -198,7 +198,7 @@ listening.setup('test', HOST, PORT,
 				if (key){
 					listening.get_messages(type, webuser, function(errors, messages){
 						for (var i in messages){
-							log('message', messages[i]);
+							console.log('message', messages[i]);
 							socket.emit('notix', messages[i]);
 						}
 					});
