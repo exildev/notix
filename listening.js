@@ -206,21 +206,21 @@ module.exports = {
 		);
 	},
 	visit_messages_by_path: function (type, webuser, path, session_id, callback){
+		var messages_id = [];
+		this.Message.find({'type': type, 'webuser': webuser, 'visited': false, 'data.url':path}, {'_id':1}, function(err, raw){
+			raw.forEach(function (doc, index, raw) {
+				messages_id.push(doc.messages_id);
+			});
+		}.bind(this));
 		
 		this.Message.update(
-			{'data.url': path},
+			{'type': type, 'webuser': webuser, 'visited': false, 'data.url': path},
 			{'visited': true},
 			{'multi': true},
 			function(err, raw) {
-				this.Message.find({'data.url':path}, {'_id':1}, function(err, raw){
-					var messages_id = [];
-					raw.forEach(function (doc, index, raw) {
-						messages_id.push(doc.messages_id);
-					});
-					this.Session.findOne({'type': type, 'webuser':webuser}, function(err, doc){
-						callback(err, doc, messages_id);
-					});
-				}.bind(this));
+				this.Session.findOne({'type': type, 'webuser':webuser}, function(err, doc){
+					callback(err, doc, messages_id);
+				});
 			}.bind(this)
 		);
 	},
