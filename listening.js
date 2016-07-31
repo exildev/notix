@@ -208,11 +208,11 @@ module.exports = {
 	visit_messages_by_path: function (type, webuser, path, session_id, callback){
 		
 		this.Message.update(
-			{'url': path},
+			{'data.url': path},
 			{'visited': true},
 			{'multi': true},
 			function(err, raw) {
-				this.Message.find({'url':path}, {'_id':1}, function(err, raw){
+				this.Message.find({'data.url':path}, {'_id':1}, function(err, raw){
 					var messages_id = [];
 					raw.forEach(function (doc, index, raw) {
 						messages_id.push(doc.messages_id);
