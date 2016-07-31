@@ -205,6 +205,25 @@ module.exports = {
 			}.bind(this)
 		);
 	},
+	visit_messages_by_path: function (type, webuser, path, session_id, callback){
+		
+		this.Message.update(
+			{'url': path},
+			{'visited': true},
+			{'multi': true},
+			function(err, raw) {
+				this.Message.find({'url':path}, {'_id':1}, function(err, raw){
+					var messages_id = [];
+					raw.forEach(function (doc, index, raw) {
+						messages_id.push(doc.messages_id);
+					});
+					this.Session.findOne({'type': type, 'webuser':webuser}, function(err, doc){
+						callback(err, doc, messages_id);
+					});
+				})
+			}.bind(this)
+		);
+	},
 
 	update_session: function (type, webuser, session_id, socket_id, callback){
 		this.delete_session(type, webuser, session_id);

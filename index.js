@@ -142,6 +142,29 @@ listening.setup('test', HOST, PORT,
 				}
 			});
 
+			socket.on('visited-path', function(message) {
+				var django_id = message['django_id'];
+				var usertype = message['usertype'];
+				var webuser = message['webuser'];
+				var path = message['path'];
+				var type = message['type'];
+				var key = session.get_session(django_id, usertype);
+
+				if (key){
+					console.log("visit me");
+					listening.visit_messages_by_path(type, webuser, path, django_id, function (errors, session, messages_id){
+						for (var i in session.sessions){
+							console.log("visit you", session.webuser, session.sessions[i].session_id, session.sessions[i].socket_id);
+							io.to(session.sessions[i].socket_id).emit('visited', {
+								'session_id': session.sessions[i].session_id, 
+								'messages_id': messages_id,
+								'socket_id': session.sessions[i].socket_id
+							});
+						}
+					});
+				}
+			});
+
 			socket.on('visited', function(message) {
 				var django_id = message['django_id'];
 				var usertype = message['usertype'];
