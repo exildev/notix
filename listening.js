@@ -220,7 +220,7 @@ module.exports = {
 					this.Session.findOne({'type': type, 'webuser':webuser}, function(err, doc){
 						callback(err, doc, messages_id);
 					});
-				})
+				}.bind(this));
 			}.bind(this)
 		);
 	},
