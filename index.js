@@ -194,7 +194,7 @@ listening.setup('test', HOST, PORT,
 				var webuser = message['webuser'];
 				var type = message['type'];
 				var key = session.get_session(django_id, usertype);
-				log("messages", type, webuser);
+				console.log("messages", type, webuser);
 				if (key){
 					listening.get_messages(type, webuser, function(errors, messages){
 						for (var i in messages){
