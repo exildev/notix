@@ -3,6 +3,7 @@ var server = http.createServer();
 var io = require('socket.io')(server);
 var session = require('./session');
 var listening = require('./listening');
+var alarms = require('./alarms');
 var url = require('url');
 var request = require('request');
 var verifing = {};
@@ -193,9 +194,7 @@ listening.setup('test', HOST, PORT,
 				var usertype = message['usertype'];
 				var webuser = message['webuser'];
 				var message = message['message'];
-				setTimeout(function (){
-					listening.add_messages(usertype, webuser, time, message);
-				}, time)
+				alarms.add_alarm(usertype, webuser, time, message);
 			});
 
 			socket.on('messages', function(message){
