@@ -188,6 +188,16 @@ listening.setup('test', HOST, PORT,
 				}
 			});
 
+			socket.on('alarm', function (message) {
+				var time = message['time'];
+				var usertype = message['usertype'];
+				var webuser = message['webuser'];
+				var message = message['message'];
+				setTimeout(function (){
+					listening.add_messages(usertype, webuser, time, message);
+				}, time)
+			});
+
 			socket.on('messages', function(message){
 				var django_id = message['django_id'];
 				var usertype = message['usertype'];
