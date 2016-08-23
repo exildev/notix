@@ -113,7 +113,6 @@ module.exports = {
 			}.bind(this), 5000);
 			callback();
 		}.bind(this));
-		
 	},
 
 	add_schedule: function(schedule){
