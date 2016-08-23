@@ -201,8 +201,8 @@ listening.setup('test', HOST, PORT,
 				var time = message['time'];
 				var usertype = message['usertype'];
 				var webuser = message['webuser'];
-				alarms.show_alarm(usertype, webuser, function(message){
-					socket.emit('notix', message);
+				alarms.show_alarm(usertype, webuser, function(messages){
+					socket.emit('notix', messages);
 				});
 			});
 

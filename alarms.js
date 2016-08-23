@@ -5,7 +5,7 @@
 module.exports = {
 	alarms : [],
 
-	add_alarm: function(usertype, webuser, time, message) {
+	add_alarm: function(usertype, webuser, time, message){
 		var timer = setTimeout(function (){
 			listening.add_messages(usertype, webuser, message);
 			var index = this.alarms.indexOf(timer);
@@ -22,10 +22,12 @@ module.exports = {
 	},
 
 	show_alarms(usertype, webuser, callback){
+		var alms = [];
 		for (var i in alarms){
 			if (alarms[i]['webuser'] == webuser && alarms[i]['usertype'] == usertype){
-				callback(alarms[i]);
+				alms.push(alarms[i]);
 			}
 		}
+		callback(alms);	
 	}
 };
