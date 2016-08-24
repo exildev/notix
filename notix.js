@@ -197,11 +197,11 @@ listening.setup('test', HOST, PORT,
 				var hora = message['hora'];
 				console.log("message");
 				alarms.add_alarm(usertype, webuser, time, message, function(counter){
-					console.log(usertype, webuser, message);
+					console.log(usertype, webuser, message, hora);
 						console.log("send");
 						socket.emit('alarm', {
 							'id': counter,
-							'hora': hora,								
+							'hora': hora,							
 							'html': message
 						});
 				});
