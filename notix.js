@@ -203,7 +203,7 @@ listening.setup('test', HOST, PORT,
 							console.log("send");
 							io.to(socket_id).emit('notix', {
 								'data':{
-									'data'{
+									'data':{
 										'tipo': 'Alarma',
 										'hora': hora,									
 									},
