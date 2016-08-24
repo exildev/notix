@@ -194,7 +194,12 @@ listening.setup('test', HOST, PORT,
 				var usertype = message['usertype'];
 				var webuser = message['webuser'];
 				var message = message['message'];
-				alarms.add_alarm(usertype, webuser, time, message);
+				alarms.add_alarm(usertype, webuser, time, message, function(){
+					listening.add_messages(usertype, webuser, [message], 
+						function(django_id, socket_id, message){
+							io.to(socket_id).emit('notix', message);
+						});
+				});
 			});
 
 			socket.on('show-alarm', function (message) {
@@ -202,7 +207,7 @@ listening.setup('test', HOST, PORT,
 				var usertype = message['usertype'];
 				var webuser = message['webuser'];
 				alarms.show_alarm(usertype, webuser, function(messages){
-					socket.emit('notix', messages);
+					socket.emit('list-alarms', messages);
 				});
 			});
 
