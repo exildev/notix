@@ -13,7 +13,6 @@ module.exports = {
 		}.bind(this), time);
 
 		this.alarms.push({
-			'timer':timer,
 			'webuser': webuser,
 			'usertype': usertype,
 			'time': time,
