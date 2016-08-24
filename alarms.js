@@ -8,7 +8,7 @@ module.exports = {
 	add_alarm: function(usertype, webuser, time, message, hora, callback){
 		var timer = setTimeout(function (){
 			var index = this.alarms.indexOf(timer);
-			callback(index, hora);
+			callback(index);
 			this.alarms.splice(index, 1);
 		}.bind(this), time);
 
@@ -17,7 +17,8 @@ module.exports = {
 			'webuser': webuser,
 			'usertype': usertype,
 			'time': time,
-			'message': message
+			'message': message,
+			'hora': hora
 		});
 	},
 
