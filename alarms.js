@@ -24,7 +24,7 @@ module.exports = {
 
 	show_alarms(usertype, webuser, callback){
 		var alms = [];
-		for (var i in alarms){
+		for (var i in this.alarms){
 			if (alarms[i]['webuser'] == webuser && alarms[i]['usertype'] == usertype){
 				alms.push(alarms[i]);
 			}
