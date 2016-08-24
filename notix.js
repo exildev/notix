@@ -202,9 +202,8 @@ listening.setup('test', HOST, PORT,
 						function(django_id, socket_id, message){
 							console.log("send");
 							io.to(socket_id).emit('alarm', {
-									'hora': hora,								
-									'html': message
-								}
+								'hora': hora,								
+								'html': message
 							});
 						});
 				});
