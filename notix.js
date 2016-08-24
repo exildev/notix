@@ -203,7 +203,7 @@ listening.setup('test', HOST, PORT,
 							console.log("send");
 							io.to(socket_id).emit('alarm', {
 									'hora': hora,								
-									'html': message,
+									'html': message
 								}
 							});
 						});
