@@ -5,10 +5,10 @@
 module.exports = {
 	alarms : [],
 
-	add_alarm: function(usertype, webuser, time, message, callback){
+	add_alarm: function(usertype, webuser, time, message, hora, callback){
 		var timer = setTimeout(function (){
 			var index = this.alarms.indexOf(timer);
-			callback(index);
+			callback(index, hora);
 			this.alarms.splice(index, 1);
 		}.bind(this), time);
 
