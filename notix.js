@@ -190,7 +190,7 @@ listening.setup('test', HOST, PORT,
 			});
 
 			socket.on('alarm', function (message) {
-				console.log(message);
+				console.log('GGGG:', message);
 				var time = message['time'];
 				var usertype = message['usertype'];
 				var webuser = message['webuser'];
