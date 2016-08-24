@@ -199,7 +199,7 @@ listening.setup('test', HOST, PORT,
 				alarms.add_alarm(usertype, webuser, time, message, function(counter){
 					console.log(usertype, webuser, message);
 						console.log("send");
-						io.to(socket_id).emit('alarm', {
+						socket.emit('alarm', {
 							'id': counter,
 							'hora': hora,								
 							'html': message
