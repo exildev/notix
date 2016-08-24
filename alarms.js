@@ -7,8 +7,8 @@ module.exports = {
 
 	add_alarm: function(usertype, webuser, time, message, callback){
 		var timer = setTimeout(function (){
-			callback();
 			var index = this.alarms.indexOf(timer);
+			callback(index);
 			this.alarms.splice(index, 1);
 		}.bind(this), time);
 

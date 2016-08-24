@@ -196,12 +196,13 @@ listening.setup('test', HOST, PORT,
 				var message = message['message'];
 				var hora = message['hora'];
 				console.log("message");
-				alarms.add_alarm(usertype, webuser, time, message, function(){
+				alarms.add_alarm(usertype, webuser, time, message, function(counter){
 					console.log(usertype, webuser, message);
 					listening.add_messages(usertype, webuser, [message], 
 						function(django_id, socket_id, message){
 							console.log("send");
 							io.to(socket_id).emit('alarm', {
+								'id': counter,
 								'hora': hora,								
 								'html': message
 							});
