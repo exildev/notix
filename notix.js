@@ -201,12 +201,8 @@ listening.setup('test', HOST, PORT,
 					listening.add_messages(usertype, webuser, [message], 
 						function(django_id, socket_id, message){
 							console.log("send");
-							io.to(socket_id).emit('notix', {
-								'data':{
-									'data':{
-										'tipo': 'Alarma',
-										'hora': hora,									
-									},
+							io.to(socket_id).emit('alarm', {
+									'hora': hora,								
 									'html': message,
 								}
 							});
