@@ -209,9 +209,9 @@ listening.setup('test', HOST, PORT,
 
 			socket.on('show-alarm', function (message) {
 				var usertype = message['usertype'];
-				var webuser = message['webuser'];
+				var webuser  = message['webuser'];
 				console.log(message);
-				alarms.show_alarm(usertype, webuser, function(messages){
+				alarms.show_alarms(usertype, webuser, function(messages){
 					console.log("Emit", messages);
 					socket.emit('list-alarms', messages);
 				});
