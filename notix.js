@@ -7,7 +7,7 @@ var alarms = require('./alarms');
 var url = require('url');
 var request = require('request');
 var verifing = {};
-var HOST = '192.168.0.107';
+var HOST = '192.168.0.116';
 var PORT = 8000;
 var fs = require('fs');
 
@@ -53,7 +53,7 @@ listening.setup('test', HOST, PORT,
 				var usertype = message['usertype'];
 				var username = message['username'];
 				var password = message['password'];
-				console.log('login', webuser, django_id);
+				console.log('login', webuser, django_id, socket.id);
 
 				if (usertype == 'WEB'){
 					verifing[django_id] = socket.id;
@@ -114,10 +114,10 @@ listening.setup('test', HOST, PORT,
 				console.log("save", message);
 				if (key){
 					for (var to in send_to){
-						log(send_to[to]);
+						console.log(send_to[to]);
 						listening.add_messages_by_type(send_to[to], [message], 
 							function(django_id, socket_id, message){
-								log('notix', socket_id, django_id, send_to[to]);
+								console.log('notix', socket_id, django_id, send_to[to]);
 								io.to(socket_id).emit('notix', message);
 						}, exclude);
 					}
