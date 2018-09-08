@@ -7,7 +7,7 @@ var alarms = require('./alarms');
 var url = require('url');
 var request = require('request');
 var verifing = {};
-var HOST = '104.236.33.228';
+var HOST = 'localhost';
 var PORT = 8050;
 var fs = require('fs');
 
