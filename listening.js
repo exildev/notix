@@ -18,7 +18,7 @@ module.exports = {
 	schedule : {},
 	cron_stop: false,
 	HOST: 'localhost',
-	PORT: '80',
+	PORT: '8080',
 
 
 	setup: function (db, HOST, PORT, init, callback){
