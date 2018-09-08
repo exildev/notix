@@ -130,7 +130,7 @@ module.exports = {
 		var today = now.getFullYear() + "-" + now.getMonth() + "-" + now.getDate();
 		////console.log('http://' + this.HOST + ':' + this.PORT + '/notificaciones/calendar/?start=' + today + '&end=' + today);
 		request('http://' + this.HOST + ':' + this.PORT + '/notificaciones/calendar/?start=' + today + '&end=' + today, function (error, response, body) {
-			console.log('#####body#####', body);
+			console.log('#####body#####', body, error);
 			var schedules = JSON.parse(body);
 			for (var i in schedules){
 				this.add_schedule(schedules[i]);
