@@ -8,7 +8,7 @@ var url = require('url');
 var request = require('request');
 var verifing = {};
 var HOST = 'localhost';
-var PORT = 8080;
+var PORT = 80;
 var fs = require('fs');
 
 function log(){
